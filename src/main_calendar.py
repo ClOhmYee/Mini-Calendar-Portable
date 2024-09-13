@@ -1,6 +1,7 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QCalendarWidget
-from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QCalendarWidget, QDialog, QLabel, QPushButton
+from PyQt5.QtCore import Qt, QDate
+
 
 # main calendar window
 class CalendarApp(QMainWindow):
@@ -29,10 +30,29 @@ class CalendarApp(QMainWindow):
         container.setLayout(layout)
         self.setCentralWidget(container)
 
-    def show_schedule(self, date):  # function that triggers when the date is pressed
+    def show_schedule(self, date: QDate):  # function that triggers when the date is pressed
         # need a pop-up that displays the schedule for the day when clicked
-        print(f"You clicked {date.toString()}") # remove as needed
+        print(f"Now clicked : {date.toString('yyyy/MM/dd/dddd')}") # remove as needed
+        date_info = DateMessageBox(date)
+        date_info.exec_()
 
+
+class DateMessageBox(QDialog):
+    def __init__(self, date: QDate):
+        super().__init__()
+        info = 'put data here'        # stub
+        self.setWindowTitle(f"{date.toString('yyyy/MM/dd')}")
+        self.setFixedSize(300,200)
+        
+        layout = QVBoxLayout()
+        label = QLabel(f"{info}")
+        layout.addWidget(label)
+
+        button = QPushButton("Done")
+        button.clicked.connect(self.accept)
+        layout.addWidget(button)
+        
+        self.setLayout(layout)
 
 
 if __name__ == "__main__":
