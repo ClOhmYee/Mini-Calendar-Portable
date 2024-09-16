@@ -29,7 +29,6 @@ def authenticate_google():
     return service
 
 def get_picked_events(date):
-
     creds = Credentials.from_authorized_user_file(token_path, ['https://www.googleapis.com/auth/calendar.readonly'])
     service = build('calendar', 'v3', credentials=creds)
 
