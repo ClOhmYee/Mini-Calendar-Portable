@@ -1,6 +1,7 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QCalendarWidget, QDialog, QLabel, QPushButton
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QCalendarWidget, QDialog, QPushButton, QListWidget
 from PyQt5.QtCore import Qt, QDate
+import google_api as api
 
 
 # main calendar window
@@ -21,7 +22,7 @@ class CalendarApp(QMainWindow):
         self.calendar = QCalendarWidget(self)
         self.calendar.setVerticalHeaderFormat(0)    # exclude extra column
         self.calendar.setGridVisible(True)
-        self.calendar.clicked.connect(self.show_schedule)
+        self.calendar.clicked.connect(self.get_selected_events)
 
         layout = QVBoxLayout()
         layout.addWidget(self.calendar)
@@ -30,23 +31,31 @@ class CalendarApp(QMainWindow):
         container.setLayout(layout)
         self.setCentralWidget(container)
 
-    def show_schedule(self, date: QDate):  # function that triggers when the date is pressed
-        # need a pop-up that displays the schedule for the day when clicked
-        print(f"Now clicked : {date.toString('yyyy/MM/dd/dddd')}") # remove as needed
-        date_info = DateMessageBox(date)
-        date_info.exec_()
+    def get_selected_events(self, date):
+        selected_date = date.toPyDate()
+        events_result = api.get_picked_events(selected_date)
+
+        popup = DateMessageBox(date)
+
+        if events_result == -1:
+            popup.event_list.addItem(f"Events on that date do not exist.")
+        else:
+            for event in events_result:
+                start = event['start'].get('dateTime', event['start'].get('date'))
+                popup.event_list.addItem(f"{start}: {event['summary']}")
+
+        popup.exec_()
 
 
 class DateMessageBox(QDialog):
     def __init__(self, date: QDate):
         super().__init__()
-        info = 'put data here'        # stub
+        layout = QVBoxLayout()
         self.setWindowTitle(f"{date.toString('yyyy/MM/dd')}")
         self.setFixedSize(300,200)
         
-        layout = QVBoxLayout()
-        label = QLabel(f"{info}")
-        layout.addWidget(label)
+        self.event_list = QListWidget(self)
+        layout.addWidget(self.event_list)
 
         button = QPushButton("Done")
         button.clicked.connect(self.accept)
@@ -60,3 +69,4 @@ if __name__ == "__main__":
     main_window = CalendarApp()
     main_window.show()
     sys.exit(app.exec_())
+    api.list_calendars()

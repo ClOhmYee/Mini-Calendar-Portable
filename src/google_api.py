@@ -28,9 +28,30 @@ def authenticate_google():
 
     return service
 
+def get_picked_events(date):
+
+    creds = Credentials.from_authorized_user_file(token_path, ['https://www.googleapis.com/auth/calendar.readonly'])
+    service = build('calendar', 'v3', credentials=creds)
+
+    start_of_day = datetime.datetime.combine(date, datetime.time.min).isoformat() + 'Z'
+    end_of_day = datetime.datetime.combine(date, datetime.time.max).isoformat() + 'Z'
+
+    events_result = service.events().list(calendarId='primary',
+                                                timeMin=start_of_day,
+                                                timeMax=end_of_day,
+                                                singleEvents=True,
+                                                orderBy='startTime').execute()
+    events = events_result.get('items', [])
+
+    if not events:
+        return -1   # Events on that date do not exist
+    else:
+        return events
+    
+
 # just for test, modify next
-def get_events(service, max_results=10):
-    now = datetime.datetime.utcnow().isoformat() + "Z"
+def test_ten_events(service, max_results=10):
+    now = datetime.datetime.now().isoformat() + "Z"
     print("Getting the upcoming 10 events")
     events_result = (
         service.events()
@@ -56,3 +77,11 @@ def get_events(service, max_results=10):
     
     return events
 
+# test function for get all info from user, remove later or improve it
+def list_calendars(self):
+    
+    calendar_list_result = self.service.calendarList().list().execute()
+    calendars = calendar_list_result.get('items', [])
+
+    for calendar in calendars:
+        print(f"Summary: {calendar['summary']}, ID: {calendar['id']}")
