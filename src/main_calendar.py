@@ -8,16 +8,17 @@ import google_api as api
 class CalendarApp(QMainWindow):
     def __init__(self):
         # value of window size
-        WIDTH, HEIGHT = 400, 300
+        self.WIDTH, self.HEIGHT = 400, 300
 
         # setting default position
         screen = QApplication.primaryScreen()
         resolution = screen.availableGeometry()
-        spawn_x, spawn_y = resolution.width() - WIDTH, resolution.height() - HEIGHT # appears in bottom right
-        
+
+        # appears in bottom right
+        self.spawn_x, self.spawn_y = resolution.width() - self.WIDTH, resolution.height() - self.HEIGHT         
         super().__init__()
         self.setWindowTitle("Mini Calendar with Google Calendar")
-        self.setGeometry(spawn_x, spawn_y, WIDTH, HEIGHT)
+        self.setGeometry(self.spawn_x, self.spawn_y, self.WIDTH, self.HEIGHT)
 
         self.calendar = QCalendarWidget(self)
         self.calendar.setVerticalHeaderFormat(0)    # exclude extra column
@@ -37,13 +38,14 @@ class CalendarApp(QMainWindow):
 
         popup = DateMessageBox(date)
 
-        if events_result == -1:
+        if events_result == []:     # there is no event
             popup.event_list.addItem(f"Events on that date do not exist.")
         else:
             for event in events_result:
                 start = event['start'].get('dateTime', event['start'].get('date'))
                 popup.event_list.addItem(f"{start}: {event['summary']}")
-
+        
+        popup.setGeometry(self.spawn_x, self.spawn_y, self.WIDTH, self.HEIGHT)
         popup.exec_()
 
 
@@ -53,7 +55,7 @@ class DateMessageBox(QDialog):
         layout = QVBoxLayout()
         self.setWindowTitle(f"{date.toString('yyyy/MM/dd')}")
         self.setFixedSize(300,200)
-        
+
         self.event_list = QListWidget(self)
         layout.addWidget(self.event_list)
 
