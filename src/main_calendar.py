@@ -9,14 +9,18 @@ class CalendarApp(QMainWindow):
     def __init__(self):
         # value of window size
         self.WIDTH, self.HEIGHT = 400, 300
+        # value of local utc
+        self.local_utc = None
+        super().__init__()
+        self.initUI()
 
+    def initUI(self):
         # setting default position
         screen = QApplication.primaryScreen()
         resolution = screen.availableGeometry()
 
         # appears in bottom right
-        self.spawn_x, self.spawn_y = resolution.width() - self.WIDTH, resolution.height() - self.HEIGHT         
-        super().__init__()
+        self.spawn_x, self.spawn_y = resolution.width() - self.WIDTH, resolution.height() - self.HEIGHT
         self.setWindowTitle("Mini Calendar with Google Calendar")
         self.setGeometry(self.spawn_x, self.spawn_y, self.WIDTH, self.HEIGHT)
 
@@ -49,6 +53,7 @@ class CalendarApp(QMainWindow):
         popup.exec_()
 
 
+# pop-up that displays the schedule on click event
 class DateMessageBox(QDialog):
     def __init__(self, date: QDate):
         super().__init__()
@@ -66,9 +71,9 @@ class DateMessageBox(QDialog):
         self.setLayout(layout)
 
 
+# run directly to execute
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     main_window = CalendarApp()
     main_window.show()
     sys.exit(app.exec_())
-    api.list_calendars()
