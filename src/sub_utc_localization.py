@@ -4,14 +4,15 @@ from PyQt5.QtWidgets import QWidget, QLabel, QDoubleSpinBox, QVBoxLayout, QMessa
 class UtcSetup(QWidget):
     def __init__(self):
         super().__init__()
-        self.initUI()
+        self.init_UI()
 
-    def initUI(self):
+    def init_UI(self):
         self.lbl1 = QLabel('Enter the UTC time according to your location')
         self.dspinbox = QDoubleSpinBox()
-        self.dspinbox.setRange(-12,12)
-        self.dspinbox.setSingleStep(0.25)
+        self.dspinbox.setRange(-12,14)
+        self.dspinbox.setSingleStep(0.5)
         self.dspinbox.setPrefix('UTC ')
+        self.dspinbox.setSuffix('h')
         self.dspinbox.setDecimals(2)
 
         self.dspinbox.valueChanged.connect(self.value_changed)
@@ -31,10 +32,15 @@ class UtcSetup(QWidget):
 
     def closeEvent(self, event):
         current_utc = self.dspinbox.value()
-        modify_check = QMessageBox.question(self, 'UTC Confirmation',
-                                            f'Are you sure you chose UTC {current_utc}? ',
-                                            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-
+        if current_utc < 0:
+            modify_check = QMessageBox.question(self, 'UTC Confirmation',
+                                                f'Are you sure your standard time is UTC {current_utc:.2f} hour? ',
+                                                QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        else:
+            modify_check = QMessageBox.question(self, 'UTC Confirmation',
+                                                f'Are you sure your standard time is UTC +{current_utc:.2f} hour? ',
+                                                QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            
         if modify_check == QMessageBox.Yes:
             event.accept()
         else:
