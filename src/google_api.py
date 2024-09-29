@@ -1,4 +1,4 @@
-import os.path
+import os
 import datetime
 
 from google.oauth2.credentials import Credentials
@@ -18,6 +18,8 @@ def authenticate_google():
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
+            with open('path_to_token.json', 'w') as token:
+                token.write(creds.to_json())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(credentials_path, SCOPES)
             creds = flow.run_local_server(port=0)
@@ -28,15 +30,15 @@ def authenticate_google():
 
     return service
 
-def get_picked_events(date):
+def get_picked_events(date, utc_value):
     all_events = []
     service = authenticate_google()
 
     calendar_list_result = service.calendarList().list().execute()
     calendars = calendar_list_result.get('items', [])
 
-    start_of_day = datetime.datetime.combine(date, datetime.time.min).isoformat() + 'Z'
-    end_of_day = datetime.datetime.combine(date, datetime.time.max).isoformat() + 'Z'
+    start_of_day = datetime.datetime.combine(date, datetime.time.min).isoformat() + utc_value
+    end_of_day = datetime.datetime.combine(date, datetime.time.max).isoformat() + utc_value
     
     for picked_calendar in calendars:
         picked_calendar_id = picked_calendar['id']

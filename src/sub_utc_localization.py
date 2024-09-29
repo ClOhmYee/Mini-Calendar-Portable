@@ -1,7 +1,7 @@
 import sys
-from PyQt5.QtWidgets import QWidget, QLabel, QDoubleSpinBox, QVBoxLayout, QMessageBox
+from PyQt5.QtWidgets import QDialog, QLabel, QDoubleSpinBox, QVBoxLayout, QMessageBox
 
-class UtcSetup(QWidget):
+class UtcSetup(QDialog):
     def __init__(self):
         super().__init__()
         self.init_UI()
@@ -24,26 +24,36 @@ class UtcSetup(QWidget):
         self.setLayout(layout)
 
         self.setWindowTitle('UTC Localization')
-        self.show()
 
     def value_changed(self):
-        current_utc = self.dspinbox.value()
-        print(f'current value is {current_utc}')
+        self.current_utc = self.dspinbox.value()
+        print(f'current value is {self.current_utc}')
+
+    def get_value(self):
+        return self.current_utc
 
     def closeEvent(self, event):
-        current_utc = self.dspinbox.value()
-        if current_utc < 0:
+        self.current_utc = self.dspinbox.value()
+        if self.current_utc < 0:
             modify_check = QMessageBox.question(self, 'UTC Confirmation',
-                                                f'Are you sure your standard time is UTC {current_utc:.2f} hour? ',
+                                                f'Are you sure your standard time is UTC {self.current_utc:.2f} hour? ',
                                                 QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         else:
             modify_check = QMessageBox.question(self, 'UTC Confirmation',
-                                                f'Are you sure your standard time is UTC +{current_utc:.2f} hour? ',
+                                                f'Are you sure your standard time is UTC +{self.current_utc:.2f} hour? ',
                                                 QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             
         if modify_check == QMessageBox.Yes:
-            event.accept()
+            self.accept()
         else:
             event.ignore()
 
+
+def show_dialog():
+    dialog = UtcSetup()
+    
+    if dialog.exec_() == QDialog.Accepted:
+        return dialog.current_utc
+    else:
+        return None
 
