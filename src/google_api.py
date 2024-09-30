@@ -16,13 +16,8 @@ def authenticate_google():
     if os.path.exists(token_path):
         creds = Credentials.from_authorized_user_file(token_path, SCOPES)
     if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-            with open('path_to_token.json', 'w') as token:
-                token.write(creds.to_json())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(credentials_path, SCOPES)
-            creds = flow.run_local_server(port=0)
+        flow = InstalledAppFlow.from_client_secrets_file(credentials_path, SCOPES)
+        creds = flow.run_local_server(port=0, prompt='consent')
         with open(token_path, 'w') as token:
             token.write(creds.to_json())
 
