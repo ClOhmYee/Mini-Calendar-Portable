@@ -1,5 +1,9 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QCalendarWidget, QDialog, QPushButton, QListWidget, QAction, QMessageBox
+from PyQt5.QtWidgets import (
+    QApplication, QMainWindow, QVBoxLayout, QWidget, QCalendarWidget,
+    QDialog, QPushButton, QListWidget, QAction, QMessageBox
+)
+from PyQt5.QtGui import QTextCharFormat, QBrush, QColor
 from PyQt5.QtCore import Qt, QDate
 import google_api as api
 import sub_utc_localization as utc
@@ -46,6 +50,8 @@ class CalendarApp(QMainWindow):
 
     def get_selected_events(self, date):
         selected_date = date.toPyDate()
+        text_format = QTextCharFormat()
+        text_format.setBackground(QBrush(QColor("lightblue")))
         events_result = api.get_picked_events(selected_date, self.local_utc)
 
         popup = DateMessageBox(date)
@@ -53,6 +59,7 @@ class CalendarApp(QMainWindow):
         if events_result == []:     # there is no event
             popup.event_list.addItem(f"Events on that date do not exist.")
         else:
+            self.calendar.setDateTextFormat(date, text_format)
             for event in events_result:
                 start = event['start'].get('dateTime', event['start'].get('date'))
                 popup.event_list.addItem(f"{start}: {event['summary']}")
