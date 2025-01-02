@@ -1,9 +1,11 @@
 import sys
 import os
 from PyQt5.QtWidgets import QApplication, QDialog
-sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'src'))
 
-import sub_utc_localization as utc
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../'))
+sys.path.append(project_root)
+
+from src import sub_utc_localization as utc
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

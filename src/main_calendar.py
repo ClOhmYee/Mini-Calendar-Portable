@@ -7,6 +7,7 @@ from PyQt5.QtGui import QTextCharFormat, QBrush, QColor
 from PyQt5.QtCore import Qt, QDate
 import google_api as api
 import sub_utc_localization as utc
+import encryption
 
 # main calendar window
 class CalendarApp(QMainWindow):

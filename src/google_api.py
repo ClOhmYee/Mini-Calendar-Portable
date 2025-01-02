@@ -1,15 +1,19 @@
 import os
 import datetime
+import sys
 
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../'))
+sys.path.append(project_root)
+
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 base_path = os.path.dirname(os.path.abspath(__file__))
-credentials_path = os.path.join(base_path, 'credentials.json')
-token_path = os.path.join(base_path, 'token.json')
+credentials_path = os.path.join(project_root, './data/credentials.json')
+token_path = os.path.join(project_root, './data/token.json')
 
 def authenticate_google():
     creds = None
