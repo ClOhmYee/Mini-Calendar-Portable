@@ -1,4 +1,5 @@
 import sys
+import os
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QVBoxLayout, QWidget, QCalendarWidget,
     QDialog, QPushButton, QListWidget, QAction, QMessageBox
@@ -7,7 +8,7 @@ from PyQt5.QtGui import QTextCharFormat, QBrush, QColor
 from PyQt5.QtCore import Qt, QDate
 import google_api as api
 import sub_utc_localization as utc
-import encryption
+import encryption as enc
 
 # main calendar window
 class CalendarApp(QMainWindow):
@@ -85,7 +86,15 @@ class CalendarApp(QMainWindow):
                 msg.setText("UTC set failed. Try it again.")
                 msg.setStandardButtons(QMessageBox.Ok)
                 msg.exec_()
-            
+
+    def closeEvent(self, event):
+        if os.path.isfile(enc.enc_data_path) and os.path.isfile(api.token_path):
+            try:
+                os.remove(enc.token_path)
+            except FileNotFoundError:
+                raise FileNotFoundError("Need permission to delete token file.")
+            except Exception as e:
+                print(f"Error : {e}")
 
 # pop-up that displays the schedule on click event
 class DateMessageBox(QDialog):

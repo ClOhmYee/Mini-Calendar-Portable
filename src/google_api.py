@@ -1,29 +1,38 @@
 import os
 import datetime
 import sys
+import encryption as enc
 
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../'))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 base_path = os.path.dirname(os.path.abspath(__file__))
-credentials_path = os.path.join(project_root, './data/credentials.json')
-token_path = os.path.join(project_root, './data/token.json')
+credentials_path = os.path.join(project_root, "data", "credentials.json")
+token_path = os.path.join(project_root, "data", "token.json")
 
 def authenticate_google():
     creds = None
+    enc_path = os.path.join(token_path, "..", "token_enc.json")
     if os.path.exists(token_path):
         creds = Credentials.from_authorized_user_file(token_path, SCOPES)
+    elif os.path.isfile(enc_path):
+        enc.decryption(enc_path)
+        creds = Credentials.from_authorized_user_file(token_path, SCOPES)
+
     if not creds or not creds.valid:
         flow = InstalledAppFlow.from_client_secrets_file(credentials_path, SCOPES)
         creds = flow.run_local_server(port=0, prompt='consent')
         with open(token_path, 'w') as token:
             token.write(creds.to_json())
+
+        if os.path.isfile(token_path):
+            enc.encryption(token_path)
 
     service = build('calendar', 'v3', credentials=creds)
 
