@@ -3,7 +3,7 @@ import os
 
 base_path = os.path.dirname(os.path.abspath(__file__))
 data_path = os.path.join(base_path, "data")
-token_path = os.path.join(data_path, "data", "token.json")
+token_path = os.path.join(data_path, "token.json")
 key_path = os.path.join(data_path, "enc.key")
 enc_data_path = os.path.join(data_path, "token_enc.json")
 

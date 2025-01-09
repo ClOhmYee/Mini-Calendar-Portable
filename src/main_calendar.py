@@ -88,13 +88,13 @@ class CalendarApp(QMainWindow):
                 msg.exec_()
 
     def closeEvent(self, event):
-        if os.path.isfile(enc.enc_data_path) and os.path.isfile(api.token_path):
+        print(enc.token_path)
+        if os.path.isfile(enc.enc_data_path) and os.path.isfile(enc.token_path):
             try:
                 os.remove(enc.token_path)
-            except FileNotFoundError:
-                raise FileNotFoundError("Need permission to delete token file.")
             except Exception as e:
                 print(f"Error : {e}")
+
 
 # pop-up that displays the schedule on click event
 class DateMessageBox(QDialog):

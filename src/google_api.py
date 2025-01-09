@@ -16,14 +16,12 @@ base_path = os.path.dirname(os.path.abspath(__file__))
 credentials_path = os.path.join(project_root, "data", "credentials.json")
 token_path = os.path.join(project_root, "data", "token.json")
 
+# this function makes both token.json and token_enc.json(encrypted token file)
+# in main close event, only token_enc.json will remain safe, for security
 def authenticate_google():
     creds = None
-    enc_path = os.path.join(token_path, "..", "token_enc.json")
-    if os.path.exists(token_path):
-        creds = Credentials.from_authorized_user_file(token_path, SCOPES)
-    elif os.path.isfile(enc_path):
-        enc.decryption(enc_path)
-        creds = Credentials.from_authorized_user_file(token_path, SCOPES)
+    enc_path = os.path.join(project_root, "data", "token_enc.json")
+    
 
     if not creds or not creds.valid:
         flow = InstalledAppFlow.from_client_secrets_file(credentials_path, SCOPES)
@@ -33,6 +31,12 @@ def authenticate_google():
 
         if os.path.isfile(token_path):
             enc.encryption(token_path)
+
+    else:
+        if os.path.isfile(enc_path):
+            enc.decryption(enc_path)
+
+        creds = Credentials.from_authorized_user_file(token_path, SCOPES)
 
     service = build('calendar', 'v3', credentials=creds)
 
